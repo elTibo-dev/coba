@@ -1,97 +1,96 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Cobá - Perfil Cliente</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
-  body {
-    margin: 0; padding: 20px;
-    background: #f5e9d3;
-    font-family: 'Quicksand', sans-serif;
-    color: #4b2e05;
-  }
-  #container {
-    max-width: 400px;
-    margin: 0 auto;
-    background: #fff6e8;
-    border-radius: 20px;
-    padding: 25px 20px 30px 20px;
-    box-shadow: 0 6px 15px rgba(75,46,5,0.2);
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .info {
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-  }
-  label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 6px;
-  }
-  input[type="text"] {
-    width: 100%;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 2px solid #7b4f24;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #4b2e05;
-    box-sizing: border-box;
-  }
-  button {
-    margin-top: 15px;
-    width: 100%;
-    padding: 12px 0;
-    background: #7b4f24;
-    border: none;
-    border-radius: 25px;
-    color: #f5e9d3;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(123,79,36,0.3);
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #4b2e05;
-  }
-  #message {
-    margin-top: 15px;
-    font-weight: 600;
-    text-align: center;
-    color: #4b2e05;
-  }
-  /* Barra de progreso */
-  #progress-container {
-    margin-top: 20px;
-  }
-  #progress-bar {
-    width: 100%;
-    background: #e3d3b1;
-    border-radius: 20px;
-    overflow: hidden;
-    height: 22px;
-  }
-  #progress-fill {
-    height: 100%;
-    background: #7b4f24;
-    width: 0%;
-    border-radius: 20px 0 0 20px;
-    transition: width 0.5s ease;
-  }
-  #progress-text {
-    margin-top: 8px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #4b2e05;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cobá - Perfil Cliente</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+    body {
+      margin: 0; padding: 20px;
+      background: #f5e9d3;
+      font-family: 'Quicksand', sans-serif;
+      color: #4b2e05;
+    }
+    #container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #fff6e8;
+      border-radius: 20px;
+      padding: 25px 20px 30px 20px;
+      box-shadow: 0 6px 15px rgba(75,46,5,0.2);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .info {
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 2px solid #7b4f24;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4b2e05;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px 0;
+      background: #7b4f24;
+      border: none;
+      border-radius: 25px;
+      color: #f5e9d3;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(123,79,36,0.3);
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #4b2e05;
+    }
+    #message {
+      margin-top: 15px;
+      font-weight: 600;
+      text-align: center;
+      color: #4b2e05;
+    }
+    #progress-container {
+      margin-top: 20px;
+    }
+    #progress-bar {
+      width: 100%;
+      background: #e3d3b1;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 22px;
+    }
+    #progress-fill {
+      height: 100%;
+      background: #7b4f24;
+      width: 0%;
+      border-radius: 20px 0 0 20px;
+      transition: width 0.5s ease;
+    }
+    #progress-text {
+      margin-top: 8px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #4b2e05;
+    }
+  </style>
 </head>
 <body>
   <div id="container">
@@ -117,74 +116,73 @@
     <div id="message"></div>
   </div>
 
-<script>
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec';
+  <script>
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec';
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const uid = urlParams.get('uid');
+    const urlParams = new URLSearchParams(window.location.search);
+    const uid = urlParams.get('uid');
 
-  const nombreDisplay = document.getElementById('nombreDisplay');
-  const visitasDisplay = document.getElementById('visitasDisplay');
-  const ultimaDisplay = document.getElementById('ultimaDisplay');
-  const progressFill = document.getElementById('progress-fill');
-  const progressText = document.getElementById('progress-text');
-  const nombreInput = document.getElementById('nombreInput');
-  const guardarNombreBtn = document.getElementById('guardarNombreBtn');
-  const message = document.getElementById('message');
+    const nombreDisplay = document.getElementById('nombreDisplay');
+    const visitasDisplay = document.getElementById('visitasDisplay');
+    const ultimaDisplay = document.getElementById('ultimaDisplay');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const nombreInput = document.getElementById('nombreInput');
+    const guardarNombreBtn = document.getElementById('guardarNombreBtn');
+    const message = document.getElementById('message');
 
-  const visitasParaRecompensa = 10;
+    const visitasParaRecompensa = 10;
 
-  if (!uid) {
-    nombreDisplay.textContent = 'Invitado';
-    message.textContent = 'Escanea tu llavero para ver tu perfil.';
-    guardarNombreBtn.disabled = true;
-  } else {
-    fetch(`${scriptUrl}?uid=${uid}`)
-      .then(res => res.json())
-      .then(data => {
-        const cliente = data.cliente || {};
-        nombreDisplay.textContent = cliente.nombre || 'Invitado';
-        nombreInput.value = cliente.nombre || '';
-        visitasDisplay.textContent = cliente.visitas || 0;
-        ultimaDisplay.textContent = cliente.ultima || 'N/A';
+    if (!uid) {
+      nombreDisplay.textContent = 'Invitado';
+      message.textContent = 'Escanea tu llavero para ver tu perfil.';
+      guardarNombreBtn.disabled = true;
+    } else {
+      fetch(`${scriptUrl}?uid=${uid}`)
+        .then(res => res.json())
+        .then(cliente => {
+          console.log('Datos cliente:', cliente);
+          nombreDisplay.textContent = cliente.nombre || 'Invitado';
+          nombreInput.value = cliente.nombre || '';
+          visitasDisplay.textContent = cliente.visitas || 0;
+          ultimaDisplay.textContent = cliente.ultima || 'N/A';
 
-        const visitas = parseInt(cliente.visitas) || 0;
-        let porcentaje = (visitas / visitasParaRecompensa) * 100;
-        if (porcentaje > 100) porcentaje = 100;
-        progressFill.style.width = porcentaje + '%';
-        progressText.textContent = `${visitas} de ${visitasParaRecompensa} visitas para tu recompensa`;
-      })
-      .catch(() => {
-        message.textContent = 'Error al cargar datos. Intenta más tarde.';
-      });
-  }
-
-  guardarNombreBtn.addEventListener('click', () => {
-    const nuevoNombre = nombreInput.value.trim();
-    if (!nuevoNombre) {
-      message.textContent = 'El nombre no puede estar vacío.';
-      return;
+          const visitas = parseInt(cliente.visitas) || 0;
+          let porcentaje = (visitas / visitasParaRecompensa) * 100;
+          if (porcentaje > 100) porcentaje = 100;
+          progressFill.style.width = porcentaje + '%';
+          progressText.textContent = `${visitas} de ${visitasParaRecompensa} visitas para tu recompensa`;
+        })
+        .catch(() => {
+          message.textContent = 'Error al cargar datos. Intenta más tarde.';
+        });
     }
-    message.textContent = 'Guardando nombre...';
-    guardarNombreBtn.disabled = true;
 
-    fetch(`${scriptUrl}?uid=${uid}&accion=actualizarNombre&nombre=${encodeURIComponent(nuevoNombre)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          nombreDisplay.textContent = data.nombre;
-          message.textContent = 'Nombre actualizado con éxito 😊';
+    guardarNombreBtn.addEventListener('click', () => {
+      const nuevoNombre = nombreInput.value.trim();
+      if (!nuevoNombre) {
+        message.textContent = 'El nombre no puede estar vacío.';
+        return;
+      }
+      message.textContent = 'Guardando nombre...';
+      guardarNombreBtn.disabled = true;
+
+      fetch(`${scriptUrl}?uid=${uid}&accion=actualizarNombre&nombre=${encodeURIComponent(nuevoNombre)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            nombreDisplay.textContent = data.nombre;
+            message.textContent = 'Nombre actualizado con éxito 😊';
+          } else {
+            message.textContent = 'Error al actualizar nombre.';
+          }
           guardarNombreBtn.disabled = false;
-        } else {
-          message.textContent = 'Error al actualizar nombre.';
+        })
+        .catch(() => {
+          message.textContent = 'Error de conexión.';
           guardarNombreBtn.disabled = false;
-        }
-      })
-      .catch(() => {
-        message.textContent = 'Error de conexión.';
-        guardarNombreBtn.disabled = false;
-      });
-  });
-</script>
+        });
+    });
+  </script>
 </body>
 </html>
