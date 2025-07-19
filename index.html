@@ -142,8 +142,8 @@
     }
 
     function validarPin() {
-      const pin = document.getElementById("pinInput").value;
-      const hashCorrecto = "db6fa5cc1dfc7f5ab979e2d37ab8c1a0b176469d127a8444cbf3c5e2bd56705b"; // hash de 0407
+      const pin = document.getElementById("pinInput").value.trim();
+      const hashCorrecto = "2347c8e2b2c7d1b11f496db2db17e92dfb33c52780a064967a062fc984be7dba"; // hash de 0407
       const hashIngresado = sha256(pin);
 
       if (hashIngresado === hashCorrecto) {
