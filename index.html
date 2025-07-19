@@ -101,7 +101,7 @@
         const data = await res.json();
 
         if (data.status === "ok") {
-          document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
+          document.getElementById("nombre").innerText = `¡Hola ${data.nombre || 'invitado'}!`;
           document.getElementById("visitas").innerText = Visitas: ${data.visitas || 0};
           document.getElementById("ultima").innerText = data.ultima
             ? Última visita: ${data.ultima}
