@@ -88,7 +88,8 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const uid = urlParams.get("uid");
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec?uid=" + uid;
+    const baseURL = "https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec";
+    const scriptURL = `${baseURL}?uid=${uid}`;
 
     async function cargarDatos() {
       if (!uid) {
@@ -143,7 +144,7 @@
 
     function validarPin() {
       const pin = document.getElementById("pinInput").value.trim();
-      const hashCorrecto = "2347c8e2b2c7d1b11f496db2db17e92dfb33c52780a064967a062fc984be7dba"; // hash de 0407
+      const hashCorrecto = "2347c8e2b2c7d1b11f496db2db17e92dfb33c52780a064967a062fc984be7dba"; // hash correcto de 0407
       const hashIngresado = sha256(pin);
 
       if (hashIngresado === hashCorrecto) {
