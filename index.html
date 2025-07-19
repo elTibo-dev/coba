@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cobá - Tu Cafetería</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff8f0;
+      color: #4b2e2e;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      background: white;
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #c18f6a;
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #a26f44;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Bienvenido a Cobá ☕</h1>
+    <p id="nombre">Cargando...</p>
+    <p id="visitas"></p>
+    <button onclick="registrarVisita()">Registrar visita (solo staff)</button>
+  </div>
+
+  <script>
+    const uid = window.location.pathname.split("/").pop();
+
+    async function cargarDatos() {
+      // Aquí colocas tu URL del Apps Script
+      const url = "https://script.google.com/macros/s/AKfycbw8EKygMqsK7-_eAOLQIqoCXI9i5ZXCX_NO4wLZ9uAuTlBQegmod1BiG8d_g62vOoyv/exec?uid=" + uid;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.status === "ok") {
+          document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
+          document.getElementById("visitas").innerText = Visitas totales: ${data.visitas};
+        } else {
+          document.getElementById("nombre").innerText = "UID no encontrado 😥";
+          document.getElementById("visitas").innerText = "";
+        }
+      } catch (e) {
+        document.getElementById("nombre").innerText = "Error cargando datos 😵";
+        document.getElementById("visitas").innerText = "";
+      }
+    }
+
+    async function registrarVisita() {
+      const url = "https://script.google.com/macros/s/AKfycbw8EKygMqsK7-_eAOLQIqoCXI9i5ZXCX_NO4wLZ9uAuTlBQegmod1BiG8d_g62vOoyv/exec?uid=" + uid;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.status === "ok") {
+          document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
+          document.getElementById("visitas").innerText = Visitas totales: ${data.visitas};
+          alert("Visita registrada con éxito ☕✨");
+        } else {
+          alert("No se pudo registrar la visita, UID no encontrado.");
+        }
+      } catch (e) {
+        alert("Error al registrar la visita.");
+      }
+    }
+
+    cargarDatos();
+  </script>
+</body>
+</html>
