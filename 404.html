@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cobá | Bienvenido</title>
+  <title>Cobá | Tu Cafecito</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -26,14 +26,131 @@
     }
     p {
       font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
+    #registrarBtn {
+      display: none;
+      margin-top: 1rem;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #ce9a5d;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #registrarBtn:hover {
+      background-color: #a47647;
+    }
+    #pinDiv {
+      display: none;
+      margin-top: 1rem;
+    }
+    input[type="password"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 120px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    button {
+      margin-top: 0.5rem;
+      padding: 8px 16px;
+      font-size: 1rem;
+      background-color: #ddd;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Bienvenido a Cobá ☕</h1>
-    <p>Por favor, escanea tu tarjeta NFC o pide ayuda a nuestro equipo para acceder a tu perfil.</p>
-    <p>Gracias por visitarnos 💛</p>
+    <h1>Cobá ☕</h1>
+    <p id="nombre">Cargando...</p>
+    <p id="visitas"></p>
+    <p id="ultima"></p>
+    <p id="historial"></p>
+
+    <button onclick="mostrarPinInput()">¿Eres staff?</button>
+
+    <div id="pinDiv">
+      <input type="password" id="pinInput" placeholder="PIN" inputmode="numeric" pattern="[0-9]*" />
+      <br>
+      <button onclick="validarPin()">Validar PIN</button>
+    </div>
+
+    <button id="registrarBtn" onclick="registrarVisita()">Registrar visita</button>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
+  <script>
+    const uid = window.location.pathname.split("/").pop();
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec?uid=" + uid;
+
+    async function cargarDatos() {
+      try {
+        console.log("Obteniendo datos de:", scriptURL);
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+        console.log("Datos recibidos:", data);
+
+        if (data.status === "ok") {
+          document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
+          document.getElementById("visitas").innerText = Visitas: ${data.visitas || 0};
+          document.getElementById("ultima").innerText = data.ultima
+            ? Última visita: ${data.ultima}
+            : "Aún sin visitas registradas ☕";
+          document.getElementById("historial").innerText = data.historial
+            ? Historial: ${data.historial}
+            : "Sin historial aún";
+        } else {
+          document.getElementById("nombre").innerText = "UID no encontrado 😥";
+        }
+      } catch (e) {
+        document.getElementById("nombre").innerText = "Error cargando datos 😵";
+        console.error("Error al cargar datos:", e);
+      }
+    }
+
+    async function registrarVisita() {
+      try {
+        const res = await fetch(scriptURL + "&registrar=1");
+        const data = await res.json();
+
+        if (data.status === "ok") {
+          alert("Visita registrada con éxito ☕✨");
+          document.getElementById("visitas").innerText = Visitas: ${data.visitas};
+          document.getElementById("ultima").innerText = Última visita: ${data.ultima};
+          document.getElementById("historial").innerText = Historial: ${data.historial};
+        } else {
+          alert("No se pudo registrar la visita.");
+        }
+      } catch (e) {
+        alert("Error de conexión.");
+        console.error("Error al registrar visita:", e);
+      }
+    }
+
+    function mostrarPinInput() {
+      document.getElementById("pinDiv").style.display = "block";
+    }
+
+    function validarPin() {
+      const pin = document.getElementById("pinInput").value;
+      const hashCorrecto = "db6fa5cc1dfc7f5ab979e2d37ab8c1a0b176469d127a8444cbf3c5e2bd56705b"; // hash de 0407
+      const hashIngresado = sha256(pin);
+
+      if (hashIngresado === hashCorrecto) {
+        document.getElementById("registrarBtn").style.display = "inline-block";
+        alert("Modo staff activado 😎");
+      } else {
+        alert("PIN incorrecto ❌");
+      }
+    }
+
+    cargarDatos();
+  </script>
 </body>
 </html>
