@@ -102,12 +102,12 @@
 
         if (data.status === "ok") {
           document.getElementById("nombre").innerText = `¡Hola ${data.nombre || 'invitado'}!`;
-          document.getElementById("visitas").innerText = Visitas: ${data.visitas || 0};
+          document.getElementById("visitas").innerText = `Visitas: ${data.visitas || 0}`;
           document.getElementById("ultima").innerText = data.ultima
-            ? Última visita: ${data.ultima}
+            ? `Última visita: ${data.ultima}`
             : "Aún sin visitas registradas ☕";
           document.getElementById("historial").innerText = data.historial
-            ? Historial: ${data.historial}
+            ? `Historial: ${data.historial}`
             : "Sin historial aún";
         } else {
           document.getElementById("nombre").innerText = "UID no encontrado 😥";
@@ -125,9 +125,9 @@
 
         if (data.status === "ok") {
           alert("Visita registrada con éxito ☕✨");
-          document.getElementById("visitas").innerText = Visitas: ${data.visitas};
-          document.getElementById("ultima").innerText = Última visita: ${data.ultima};
-          document.getElementById("historial").innerText = Historial: ${data.historial};
+          document.getElementById("visitas").innerText = `Visitas: ${data.visitas}`;
+          document.getElementById("ultima").innerText = `Última visita: ${data.ultima}`;
+          document.getElementById("historial").innerText = `Historial: ${data.historial}`;
         } else {
           alert("No se pudo registrar la visita.");
         }
