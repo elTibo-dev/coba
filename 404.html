@@ -33,6 +33,12 @@
     button:hover {
       background: #a26f44;
     }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #aaa;
+    }
   </style>
 </head>
 <body>
@@ -40,49 +46,87 @@
     <h1>Bienvenido a Cobá ☕</h1>
     <p id="nombre">Cargando...</p>
     <p id="visitas"></p>
-    <button onclick="registrarVisita()">Registrar visita (solo staff)</button>
+	<p id="ultima"></p>
+	<p id="historial"></p>
+
+    <!-- Botón discreto para mostrar input de PIN -->
+    <button onclick="mostrarPinInput()">⋮</button>
+
+    <!-- Campo de PIN -->
+    <div id="pinDiv" style="display:none; margin-top: 10px;">
+      <input 
+        type="password" 
+        inputmode="numeric" 
+        pattern="[0-9]*" 
+        id="pinInput" 
+        placeholder="PIN staff" />
+      <button onclick="validarPin()">Validar</button>
+    </div>
+
+    <!-- Botón para registrar visita -->
+    <button id="registrarBtn" style="display:none; margin-top: 15px;" onclick="registrarVisita()">Registrar visita ☕</button>
   </div>
 
+  <!-- Librería para SHA-256 -->
+  <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
   <script>
-    const uid = window.location.pathname.split("/").pop();
+  const uid = window.location.pathname.split("/").pop();
+  const scriptURL = "https://script.google.com/macros/s/AKfycbzos6PbzoLKore37cq5tq-L4MieHHCICheseEliPlQ62-uhRhyFnUg2fNMv7Zndfgi-/exec?uid=" + uid;
 
-    async function cargarDatos() {
-      // Aquí colocas tu URL del Apps Script
-      const url = "https://script.google.com/macros/s/AKfycbw8EKygMqsK7-_eAOLQIqoCXI9i5ZXCX_NO4wLZ9uAuTlBQegmod1BiG8d_g62vOoyv/exec?uid=" + uid;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === "ok") {
-          document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
-          document.getElementById("visitas").innerText = Visitas totales: ${data.visitas};
-        } else {
-          document.getElementById("nombre").innerText = "UID no encontrado 😥";
-          document.getElementById("visitas").innerText = "";
-        }
-      } catch (e) {
-        document.getElementById("nombre").innerText = "Error cargando datos 😵";
-        document.getElementById("visitas").innerText = "";
+  async function cargarDatos() {
+    try {
+      const res = await fetch(scriptURL);
+      const data = await res.json();
+
+      if (data.status === "ok") {
+        document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
+        document.getElementById("visitas").innerText = Visitas: ${data.visitas};
+        document.getElementById("ultima").innerText = Última visita: ${data.ultima || "sin registro"};
+        document.getElementById("historial").innerText = Historial: ${data.historial || "sin visitas aún"};
+      } else {
+        document.getElementById("nombre").innerText = "UID no encontrado 😥";
       }
+    } catch (e) {
+      document.getElementById("nombre").innerText = "Error cargando datos";
     }
+  }
 
-    async function registrarVisita() {
-      const url = "https://script.google.com/macros/s/AKfycbw8EKygMqsK7-_eAOLQIqoCXI9i5ZXCX_NO4wLZ9uAuTlBQegmod1BiG8d_g62vOoyv/exec?uid=" + uid;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === "ok") {
-          document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
-          document.getElementById("visitas").innerText = Visitas totales: ${data.visitas};
-          alert("Visita registrada con éxito ☕✨");
-        } else {
-          alert("No se pudo registrar la visita, UID no encontrado.");
-        }
-      } catch (e) {
-        alert("Error al registrar la visita.");
+  async function registrarVisita() {
+    try {
+      const res = await fetch(scriptURL + "&registrar=1");
+      const data = await res.json();
+
+      if (data.status === "ok") {
+        alert("Visita registrada con éxito ☕✨");
+        document.getElementById("visitas").innerText = Visitas: ${data.visitas};
+        document.getElementById("ultima").innerText = Última visita: ${data.ultima};
+        document.getElementById("historial").innerText = Historial: ${data.historial};
+      } else {
+        alert("No se pudo registrar la visita.");
       }
+    } catch (e) {
+      alert("Error de conexión.");
     }
+  }
 
-    cargarDatos();
-  </script>
+  function mostrarPinInput() {
+    document.getElementById("pinDiv").style.display = "block";
+  }
+
+  function validarPin() {
+    const pin = document.getElementById("pinInput").value;
+    const hashCorrecto = "db6fa5cc1dfc7f5ab979e2d37ab8c1a0b176469d127a8444cbf3c5e2bd56705b";
+    const hashIngresado = sha256(pin);
+
+    if (hashIngresado === hashCorrecto) {
+      document.getElementById("registrarBtn").style.display = "inline-block";
+      alert("Modo staff activado 😎");
+    } else {
+      alert("PIN incorrecto ❌");
+    }
+  }
+
+  cargarDatos();
+</script>
 </body>
 </html>
