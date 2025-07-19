@@ -86,15 +86,19 @@
 
   <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
   <script>
-    const uid = window.location.pathname.split("/").pop();
+    const urlParams = new URLSearchParams(window.location.search);
+    const uid = urlParams.get("uid");
     const scriptURL = "https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec?uid=" + uid;
 
     async function cargarDatos() {
+      if (!uid) {
+        document.getElementById("nombre").innerText = "Falta UID 😥";
+        return;
+      }
+
       try {
-        console.log("Obteniendo datos de:", scriptURL);
         const res = await fetch(scriptURL);
         const data = await res.json();
-        console.log("Datos recibidos:", data);
 
         if (data.status === "ok") {
           document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
@@ -110,7 +114,7 @@
         }
       } catch (e) {
         document.getElementById("nombre").innerText = "Error cargando datos 😵";
-        console.error("Error al cargar datos:", e);
+        console.error("Error:", e);
       }
     }
 
