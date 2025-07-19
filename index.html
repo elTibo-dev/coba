@@ -2,131 +2,155 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cobá - Tu Cafetería</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cobá | Tu Cafecito</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #fff8f0;
-      color: #4b2e2e;
-      margin: 0;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fef9f5;
+      color: #3a2e2e;
+      padding: 2rem;
       text-align: center;
     }
     .container {
-      background: white;
-      max-width: 400px;
-      margin: 50px auto;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: auto;
+      background-color: #fffaf4;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    button {
-      background: #c18f6a;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
+    #registrarBtn {
+      display: none;
+      margin-top: 1rem;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #ce9a5d;
       border: none;
       color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 6px;
       cursor: pointer;
     }
-    button:hover {
-      background: #a26f44;
+    #registrarBtn:hover {
+      background-color: #a47647;
     }
-    input {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #aaa;
+    #pinDiv {
+      display: none;
+      margin-top: 1rem;
+    }
+    input[type="password"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 120px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    button {
+      margin-top: 0.5rem;
+      padding: 8px 16px;
+      font-size: 1rem;
+      background-color: #ddd;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Bienvenido a Cobá ☕</h1>
+    <h1>Cobá ☕</h1>
     <p id="nombre">Cargando...</p>
     <p id="visitas"></p>
-	<p id="ultima"></p>
-	<p id="historial"></p>
+    <p id="ultima"></p>
+    <p id="historial"></p>
 
-    <!-- Botón discreto para mostrar input de PIN -->
-    <button onclick="mostrarPinInput()">⋮</button>
+    <button onclick="mostrarPinInput()">¿Eres staff?</button>
 
-    <!-- Campo de PIN -->
-    <div id="pinDiv" style="display:none; margin-top: 10px;">
-      <input 
-        type="password" 
-        inputmode="numeric" 
-        pattern="[0-9]*" 
-        id="pinInput" 
-        placeholder="PIN staff" />
-      <button onclick="validarPin()">Validar</button>
+    <div id="pinDiv">
+      <input type="password" id="pinInput" placeholder="PIN" inputmode="numeric" pattern="[0-9]*" />
+      <br>
+      <button onclick="validarPin()">Validar PIN</button>
     </div>
 
-    <!-- Botón para registrar visita -->
-    <button id="registrarBtn" style="display:none; margin-top: 15px;" onclick="registrarVisita()">Registrar visita ☕</button>
+    <button id="registrarBtn" onclick="registrarVisita()">Registrar visita</button>
   </div>
 
-  <!-- Librería para SHA-256 -->
   <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
   <script>
-  const uid = window.location.pathname.split("/").pop();
-  const scriptURL = "https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec?uid=" + uid;
+    const uid = window.location.pathname.split("/").pop();
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec?uid=" + uid;
 
-  async function cargarDatos() {
-    try {
-      const res = await fetch(scriptURL);
-      const data = await res.json();
+    async function cargarDatos() {
+      try {
+        console.log("Obteniendo datos de:", scriptURL);
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+        console.log("Datos recibidos:", data);
 
-      if (data.status === "ok") {
-        document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
-        document.getElementById("visitas").innerText = Visitas: ${data.visitas};
-        document.getElementById("ultima").innerText = Última visita: ${data.ultima || "sin registro"};
-        document.getElementById("historial").innerText = Historial: ${data.historial || "sin visitas aún"};
-      } else {
-        document.getElementById("nombre").innerText = "UID no encontrado 😥";
+        if (data.status === "ok") {
+          document.getElementById("nombre").innerText = ¡Hola ${data.nombre || 'invitado'}!;
+          document.getElementById("visitas").innerText = Visitas: ${data.visitas || 0};
+          document.getElementById("ultima").innerText = data.ultima
+            ? Última visita: ${data.ultima}
+            : "Aún sin visitas registradas ☕";
+          document.getElementById("historial").innerText = data.historial
+            ? Historial: ${data.historial}
+            : "Sin historial aún";
+        } else {
+          document.getElementById("nombre").innerText = "UID no encontrado 😥";
+        }
+      } catch (e) {
+        document.getElementById("nombre").innerText = "Error cargando datos 😵";
+        console.error("Error al cargar datos:", e);
       }
-    } catch (e) {
-      document.getElementById("nombre").innerText = "Error cargando datos";
     }
-  }
 
-  async function registrarVisita() {
-    try {
-      const res = await fetch(scriptURL + "&registrar=1");
-      const data = await res.json();
+    async function registrarVisita() {
+      try {
+        const res = await fetch(scriptURL + "&registrar=1");
+        const data = await res.json();
 
-      if (data.status === "ok") {
-        alert("Visita registrada con éxito ☕✨");
-        document.getElementById("visitas").innerText = Visitas: ${data.visitas};
-        document.getElementById("ultima").innerText = Última visita: ${data.ultima};
-        document.getElementById("historial").innerText = Historial: ${data.historial};
-      } else {
-        alert("No se pudo registrar la visita.");
+        if (data.status === "ok") {
+          alert("Visita registrada con éxito ☕✨");
+          document.getElementById("visitas").innerText = Visitas: ${data.visitas};
+          document.getElementById("ultima").innerText = Última visita: ${data.ultima};
+          document.getElementById("historial").innerText = Historial: ${data.historial};
+        } else {
+          alert("No se pudo registrar la visita.");
+        }
+      } catch (e) {
+        alert("Error de conexión.");
+        console.error("Error al registrar visita:", e);
       }
-    } catch (e) {
-      alert("Error de conexión.");
     }
-  }
 
-  function mostrarPinInput() {
-    document.getElementById("pinDiv").style.display = "block";
-  }
-
-  function validarPin() {
-    const pin = document.getElementById("pinInput").value;
-    const hashCorrecto = "db6fa5cc1dfc7f5ab979e2d37ab8c1a0b176469d127a8444cbf3c5e2bd56705b";
-    const hashIngresado = sha256(pin);
-
-    if (hashIngresado === hashCorrecto) {
-      document.getElementById("registrarBtn").style.display = "inline-block";
-      alert("Modo staff activado 😎");
-    } else {
-      alert("PIN incorrecto ❌");
+    function mostrarPinInput() {
+      document.getElementById("pinDiv").style.display = "block";
     }
-  }
 
-  cargarDatos();
-</script>
+    function validarPin() {
+      const pin = document.getElementById("pinInput").value;
+      const hashCorrecto = "db6fa5cc1dfc7f5ab979e2d37ab8c1a0b176469d127a8444cbf3c5e2bd56705b"; // hash de 0407
+      const hashIngresado = sha256(pin);
+
+      if (hashIngresado === hashCorrecto) {
+        document.getElementById("registrarBtn").style.display = "inline-block";
+        alert("Modo staff activado 😎");
+      } else {
+        alert("PIN incorrecto ❌");
+      }
+    }
+
+    cargarDatos();
+  </script>
 </body>
 </html>
