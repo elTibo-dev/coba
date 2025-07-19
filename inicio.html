@@ -1,4 +1,4 @@
-"<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -93,7 +93,7 @@
     <img src="logo-coba.png" alt="Cobá Logo" class="logo" />
     <h1>Bienvenido de vuelta <span id="nombre">invitado</span> ☕</h1>
 
-    <a id="perfil-link" class="link-btn" href="#">Ver perfil / recompensas</a>
+    <a id="perfil-link" class="link-btn" href="#">Ver recompensas</a>
 
     <a id="instagram-link" class="link-btn" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
     <a id="facebook-link" class="link-btn" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
@@ -108,61 +108,71 @@
 
     <div id="mensaje"></div>
   </div>
+  
+	<script>
+	  const scriptUrl = "https://script.google.com/macros/s/AKfycbx1zpM-C21hpiSDhAiNYWdtG6YsIzVKdeut5LJ2JYixQFw2gFy1qMCD_Pfzq48AKIP6/exec";
+	  const uid = new URLSearchParams(window.location.search).get("uid");
 
-  <script>
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbzIyduV2XYYZz2G3RsgBduAlffRUcKO-TQj8WpFBWzdPrm_eVy4aWFuZQFBzjiLkn0Y/exec";
-    const uid = new URLSearchParams(window.location.search).get("uid");
+	  const perfilLink = document.getElementById("perfil-link");
+	  const pinSection = document.getElementById("pin-section");
+	  const mensaje = document.getElementById("mensaje");
 
-    const perfilLink = document.getElementById("perfil-link");
+	  // Siempre mostrar botón de perfil si hay UID
+	  if (uid) {
+		perfilLink.href = `cliente.html?uid=${uid}`;
+	  } else {
+		perfilLink.href = "#";
+	  }
 
-    if (uid) {
-      perfilLink.href = `cliente.html?uid=${uid}`;
-    } else {
-      perfilLink.href = "#";
-    }
+	  // Cargar nombre y links desde el sheet
+	  fetch(`${scriptUrl}?uid=${uid}`)
+		.then(res => res.json())
+		.then(data => {
+		  if (data.cliente?.nombre) {
+			document.getElementById("nombre").innerText = data.cliente.nombre;
+		  }
+		  if (data.cafeteria) {
+			if (data.cafeteria.instagram)
+			  document.getElementById("instagram-link").href = data.cafeteria.instagram;
+			if (data.cafeteria.facebook)
+			  document.getElementById("facebook-link").href = data.cafeteria.facebook;
+			if (data.cafeteria.whatsapp)
+			  document.getElementById("whatsapp-link").href = data.cafeteria.whatsapp;
+		  }
+		});
 
-    fetch(`${scriptUrl}?uid=${uid}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.cliente && data.cliente.nombre) {
-          document.getElementById("nombre").innerText = data.cliente.nombre;
-        }
+	  // Mostrar campo de PIN solo al hacer clic
+	  function mostrarPinInput() {
+		pinSection.style.display = "block";
+	  }
 
-        if (data.cafeteria) {
-          if (data.cafeteria.instagram)
-            document.getElementById("instagram-link").href = data.cafeteria.instagram;
-          if (data.cafeteria.facebook)
-            document.getElementById("facebook-link").href = data.cafeteria.facebook;
-          if (data.cafeteria.whatsapp)
-            document.getElementById("whatsapp-link").href = data.cafeteria.whatsapp;
-        }
-      });
+	  // Registrar visita
+	  function registrarVisita() {
+		const pin = document.getElementById("pin").value.trim();
 
-    function mostrarPinInput() {
-      document.getElementById("pin-section").style.display = "block";
-    }
+		if (!pin) {
+		  mensaje.innerText = "Por favor ingresa el PIN.";
+		  return;
+		}
 
-    function registrarVisita() {
-      const pin = document.getElementById("pin").value.trim();
-      if (!pin || pin !== "0407") {
-        document.getElementById("mensaje").innerText = "PIN incorrecto.";
-        return;
-      }
+		fetch(`${scriptUrl}?uid=${uid}&accion=registrarVisita&pin=${encodeURIComponent(pin)}`)
+		  .then(res => res.json())
+		  .then(data => {
+			if (data.success) {
+			  mensaje.innerText = "✅ Visita registrada correctamente.";
+			  pinSection.style.display = "none"; // Ocultamos campo y botón
+			} else {
+			  mensaje.innerText = "❌ " + (data.mensaje || "Error al registrar visita.");
+			}
+		  })
+		  .catch(() => {
+			mensaje.innerText = "❌ Error de conexión.";
+		  });
+	  }
 
-      fetch(`${scriptUrl}?uid=${uid}&accion=registrarVisita`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            document.getElementById("mensaje").innerText = "✅ Visita registrada correctamente.";
-            document.getElementById("pin-section").remove();
-          } else {
-            document.getElementById("mensaje").innerText = "❌ No se pudo registrar la visita.";
-          }
-        })
-        .catch(() => {
-          document.getElementById("mensaje").innerText = "Error de conexión.";
-        });
-    }
-  </script>
+	  window.mostrarPinInput = mostrarPinInput;
+	  window.registrarVisita = registrarVisita;
+	</script>
+
 </body>
 </html>
