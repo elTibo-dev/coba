@@ -44,9 +44,9 @@
       box-sizing: border-box;
     }
     button {
-      margin-top: 15px;
+      margin-top: 10px;
       width: 100%;
-      padding: 12px 0;
+      padding: 10px 0;
       background: #7b4f24;
       border: none;
       border-radius: 25px;
@@ -98,10 +98,16 @@
 
     <div class="info"><strong>Nombre:</strong> <span id="nombreDisplay"></span></div>
 
-    <label for="nombreInput">Editar nombre:</label>
-    <input type="text" id="nombreInput" placeholder="Tu nombre" />
+    <div id="preguntaCambio">
+      <p style="margin-bottom: 10px;">¿Quieres cambiar tu nombre?</p>
+      <button id="mostrarEditorBtn">Sí, quiero cambiarlo</button>
+    </div>
 
-    <button id="guardarNombreBtn">Guardar nombre</button>
+    <div id="editorNombre" style="display: none;">
+      <label for="nombreInput">Escribe tu nuevo nombre:</label>
+      <input type="text" id="nombreInput" placeholder="Tu nombre" />
+      <button id="guardarNombreBtn">Guardar nombre</button>
+    </div>
 
     <div class="info"><strong>Visitas:</strong> <span id="visitasDisplay">0</span></div>
     <div class="info"><strong>Última visita:</strong> <span id="ultimaDisplay">N/A</span></div>
@@ -118,7 +124,6 @@
 
   <script>
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec';
-
     const urlParams = new URLSearchParams(window.location.search);
     const uid = urlParams.get('uid');
 
@@ -130,6 +135,9 @@
     const nombreInput = document.getElementById('nombreInput');
     const guardarNombreBtn = document.getElementById('guardarNombreBtn');
     const message = document.getElementById('message');
+    const preguntaCambio = document.getElementById('preguntaCambio');
+    const mostrarEditorBtn = document.getElementById('mostrarEditorBtn');
+    const editorNombre = document.getElementById('editorNombre');
 
     const visitasParaRecompensa = 10;
 
@@ -138,10 +146,48 @@
       message.textContent = 'Escanea tu llavero para ver tu perfil.';
       guardarNombreBtn.disabled = true;
     } else {
+      cargarDatosCliente();
+
+      mostrarEditorBtn.addEventListener('click', () => {
+        editorNombre.style.display = 'block';
+        preguntaCambio.style.display = 'none';
+      });
+
+      guardarNombreBtn.addEventListener('click', () => {
+        const nuevoNombre = nombreInput.value.trim();
+        if (!nuevoNombre) {
+          message.textContent = 'El nombre no puede estar vacío.';
+          return;
+        }
+
+        message.textContent = 'Guardando nombre...';
+        guardarNombreBtn.disabled = true;
+
+        fetch(`${scriptUrl}?uid=${uid}&accion=actualizarNombre&nombre=${encodeURIComponent(nuevoNombre)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              message.textContent = 'Nombre actualizado con éxito 😊';
+              cargarDatosCliente();
+              editorNombre.style.display = 'none';
+              preguntaCambio.style.display = 'block';
+            } else {
+              message.textContent = 'Error al actualizar nombre.';
+            }
+            guardarNombreBtn.disabled = false;
+          })
+          .catch(() => {
+            message.textContent = 'Error de conexión.';
+            guardarNombreBtn.disabled = false;
+          });
+      });
+    }
+
+    function cargarDatosCliente() {
       fetch(`${scriptUrl}?uid=${uid}`)
         .then(res => res.json())
-        .then(cliente => {
-          console.log('Datos cliente:', cliente);
+        .then(data => {
+          const cliente = data.cliente || {};
           nombreDisplay.textContent = cliente.nombre || 'Invitado';
           nombreInput.value = cliente.nombre || '';
           visitasDisplay.textContent = cliente.visitas || 0;
@@ -150,6 +196,7 @@
           const visitas = parseInt(cliente.visitas) || 0;
           let porcentaje = (visitas / visitasParaRecompensa) * 100;
           if (porcentaje > 100) porcentaje = 100;
+
           progressFill.style.width = porcentaje + '%';
           progressText.textContent = `${visitas} de ${visitasParaRecompensa} visitas para tu recompensa`;
         })
@@ -157,32 +204,6 @@
           message.textContent = 'Error al cargar datos. Intenta más tarde.';
         });
     }
-
-    guardarNombreBtn.addEventListener('click', () => {
-      const nuevoNombre = nombreInput.value.trim();
-      if (!nuevoNombre) {
-        message.textContent = 'El nombre no puede estar vacío.';
-        return;
-      }
-      message.textContent = 'Guardando nombre...';
-      guardarNombreBtn.disabled = true;
-
-      fetch(`${scriptUrl}?uid=${uid}&accion=actualizarNombre&nombre=${encodeURIComponent(nuevoNombre)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            nombreDisplay.textContent = data.nombre;
-            message.textContent = 'Nombre actualizado con éxito 😊';
-          } else {
-            message.textContent = 'Error al actualizar nombre.';
-          }
-          guardarNombreBtn.disabled = false;
-        })
-        .catch(() => {
-          message.textContent = 'Error de conexión.';
-          guardarNombreBtn.disabled = false;
-        });
-    });
   </script>
 </body>
 </html>
