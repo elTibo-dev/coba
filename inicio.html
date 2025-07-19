@@ -11,12 +11,15 @@
       background-color: #f5e9d3;
       font-family: 'Quicksand', sans-serif;
       color: #4b2e05;
-      text-align: center;
     }
     .container {
-      padding: 30px 20px;
       max-width: 400px;
-      margin: 0 auto;
+      margin: 30px auto;
+      background-color: #fff6e8;
+      border-radius: 20px;
+      padding: 30px 20px;
+      box-shadow: 0 6px 15px rgba(75,46,5,0.2);
+      text-align: center;
     }
     .logo {
       width: 120px;
@@ -27,7 +30,7 @@
     }
     h1 {
       font-size: 1.8rem;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     .link-btn {
       display: block;
@@ -71,15 +74,14 @@
       color: #4b2e05;
     }
     .staff-btn {
-      margin-top: 30px;
-      padding: 12px;
+      margin-top: 20px;
+      padding: 8px 14px;
       border: 2px solid #7b4f24;
       background-color: transparent;
       color: #7b4f24;
-      border-radius: 25px;
-      font-weight: bold;
+      border-radius: 20px;
+      font-weight: 600;
       cursor: pointer;
-      width: 100%;
     }
     .staff-btn:hover {
       background-color: #e3d3b1;
@@ -88,7 +90,7 @@
 </head>
 <body>
   <div class="container">
-    <img src="logo.png" alt="Cobá Logo" class="logo" />
+    <img src="logo-coba.png" alt="Cobá Logo" class="logo" />
     <h1>Bienvenido de vuelta <span id="nombre">invitado</span> ☕</h1>
 
     <a id="perfil-link" class="link-btn" href="#">Ver perfil / recompensas</a>
@@ -108,7 +110,7 @@
   </div>
 
   <script>
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbwRmu47h_Jwya1WQd8KsDEn7akyTHaqW8HjGW241QGrqPH6RVn8xZZ9f4fcwHkwj3Q6/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbzIyduV2XYYZz2G3RsgBduAlffRUcKO-TQj8WpFBWzdPrm_eVy4aWFuZQFBzjiLkn0Y/exec";
     const uid = new URLSearchParams(window.location.search).get("uid");
 
     const perfilLink = document.getElementById("perfil-link");
