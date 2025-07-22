@@ -24,8 +24,18 @@
       text-align: center;
       margin-bottom: 20px;
     }
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 20px auto;
+      display: block;
+      cursor: pointer;
+      border: 3px solid #7b4f24;
+    }
     .info {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       font-size: 1.1rem;
     }
     label {
@@ -44,14 +54,14 @@
       box-sizing: border-box;
     }
     button {
-      margin-top: 10px;
-      width: 100%;
-      padding: 10px 0;
+      margin: 10px 0;
+      width: fit-content;
+      padding: 10px 18px;
       background: #7b4f24;
       border: none;
       border-radius: 25px;
       color: #f5e9d3;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(123,79,36,0.3);
@@ -75,6 +85,7 @@
       border-radius: 20px;
       overflow: hidden;
       height: 22px;
+      position: relative;
     }
     #progress-fill {
       height: 100%;
@@ -83,6 +94,15 @@
       border-radius: 20px 0 0 20px;
       transition: width 0.5s ease;
     }
+    #progress-bar::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: #4b2e05;
+    }
     #progress-text {
       margin-top: 8px;
       text-align: center;
@@ -90,11 +110,48 @@
       font-size: 1rem;
       color: #4b2e05;
     }
+    #avatar-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .avatar-option {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .avatar-option.selected {
+      border-color: #7b4f24;
+    }
+    #inicioBtn {
+      display: block;
+      margin: 20px auto 0;
+      text-align: center;
+    }
+	
+	@keyframes destello {
+	  0% { box-shadow: 0 0 0px rgba(255,255,255,0); transform: scale(1); }
+	  50% { box-shadow: 0 0 20px rgba(255,255,255,0.6); transform: scale(1.05); }
+	  100% { box-shadow: 0 0 0px rgba(255,255,255,0); transform: scale(1); }
+	}
+	
+	.avatar-brillo {
+	  animation: destello 0.8s ease;
+	}
   </style>
+  
+  
+  
 </head>
 <body>
   <div id="container">
     <h1>Tu Perfil en Cobá</h1>
+    <img id="avatarPreview" class="avatar-preview" src="" alt="Avatar" title="Presiona para cambiar tu avatar">
 
     <div class="info"><strong>Nombre:</strong> <span id="nombreDisplay"></span></div>
 
@@ -119,91 +176,151 @@
       <div id="progress-text"></div>
     </div>
 
+    <div id="avatar-lista"></div>
     <div id="message"></div>
+    <a id="inicioBtn" href="#">Inicio</a>
   </div>
 
-  <script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzIyduV2XYYZz2G3RsgBduAlffRUcKO-TQj8WpFBWzdPrm_eVy4aWFuZQFBzjiLkn0Y/exec';
-    const urlParams = new URLSearchParams(window.location.search);
-    const uid = urlParams.get('uid');
+	<script>
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwZt_l3P9xBRrpa2811YXZWdlfeCO3naWbBIIXCA_u-lAOygIGvEPCny967FQsGL8pK/exec';
+  const urlParams = new URLSearchParams(window.location.search);
+  const uid = urlParams.get('uid');
 
-    const nombreDisplay = document.getElementById('nombreDisplay');
-    const visitasDisplay = document.getElementById('visitasDisplay');
-    const ultimaDisplay = document.getElementById('ultimaDisplay');
-    const progressFill = document.getElementById('progress-fill');
-    const progressText = document.getElementById('progress-text');
-    const nombreInput = document.getElementById('nombreInput');
-    const guardarNombreBtn = document.getElementById('guardarNombreBtn');
-    const message = document.getElementById('message');
-    const preguntaCambio = document.getElementById('preguntaCambio');
-    const mostrarEditorBtn = document.getElementById('mostrarEditorBtn');
-    const editorNombre = document.getElementById('editorNombre');
+  const nombreDisplay = document.getElementById('nombreDisplay');
+  const visitasDisplay = document.getElementById('visitasDisplay');
+  const ultimaDisplay = document.getElementById('ultimaDisplay');
+  const progressFill = document.getElementById('progress-fill');
+  const progressText = document.getElementById('progress-text');
+  const nombreInput = document.getElementById('nombreInput');
+  const guardarNombreBtn = document.getElementById('guardarNombreBtn');
+  const message = document.getElementById('message');
+  const preguntaCambio = document.getElementById('preguntaCambio');
+  const mostrarEditorBtn = document.getElementById('mostrarEditorBtn');
+  const editorNombre = document.getElementById('editorNombre');
+  const avatarPreview = document.getElementById('avatarPreview');
+  const avatarLista = document.getElementById('avatar-lista');
+  const inicioBtn = document.getElementById('inicioBtn');
 
-    const visitasParaRecompensa = 10;
+  const visitasParaRecompensa = 10;
+  let avatarSeleccionado = "";
 
-    if (!uid) {
-      nombreDisplay.textContent = 'Invitado';
-      message.textContent = 'Escanea tu llavero para ver tu perfil.';
+  if (!uid) {
+    nombreDisplay.textContent = 'Invitado';
+    message.textContent = 'Escanea tu llavero para ver tu perfil.';
+    guardarNombreBtn.disabled = true;
+  } else {
+    cargarDatosCliente();
+    cargarAvatares();
+    inicioBtn.href = `index.html?uid=${uid}`;
+
+    mostrarEditorBtn.addEventListener('click', () => {
+      editorNombre.style.display = 'block';
+      preguntaCambio.style.display = 'none';
+    });
+
+    guardarNombreBtn.addEventListener('click', () => {
+      const nuevoNombre = nombreInput.value.trim();
+      if (!nuevoNombre) {
+        message.textContent = 'El nombre no puede estar vacío.';
+        return;
+      }
+
+      message.textContent = 'Guardando nombre...';
       guardarNombreBtn.disabled = true;
-    } else {
-      cargarDatosCliente();
 
-      mostrarEditorBtn.addEventListener('click', () => {
-        editorNombre.style.display = 'block';
-        preguntaCambio.style.display = 'none';
-      });
-
-      guardarNombreBtn.addEventListener('click', () => {
-        const nuevoNombre = nombreInput.value.trim();
-        if (!nuevoNombre) {
-          message.textContent = 'El nombre no puede estar vacío.';
-          return;
-        }
-
-        message.textContent = 'Guardando nombre...';
-        guardarNombreBtn.disabled = true;
-
-        fetch(`${scriptUrl}?uid=${uid}&accion=actualizarNombre&nombre=${encodeURIComponent(nuevoNombre)}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              message.textContent = 'Nombre actualizado con éxito 😊';
-              cargarDatosCliente();
-              editorNombre.style.display = 'none';
-              preguntaCambio.style.display = 'block';
-            } else {
-              message.textContent = 'Error al actualizar nombre.';
-            }
-            guardarNombreBtn.disabled = false;
-          })
-          .catch(() => {
-            message.textContent = 'Error de conexión.';
-            guardarNombreBtn.disabled = false;
-          });
-      });
-    }
-
-    function cargarDatosCliente() {
-      fetch(`${scriptUrl}?uid=${uid}`)
+      fetch(`${scriptUrl}?uid=${uid}&accion=actualizarNombre&nombre=${encodeURIComponent(nuevoNombre)}`)
         .then(res => res.json())
         .then(data => {
-          const cliente = data.cliente || {};
-          nombreDisplay.textContent = cliente.nombre || 'Invitado';
-          nombreInput.value = cliente.nombre || '';
-          visitasDisplay.textContent = cliente.visitas || 0;
-          ultimaDisplay.textContent = cliente.ultima || 'N/A';
-
-          const visitas = parseInt(cliente.visitas) || 0;
-          let porcentaje = (visitas / visitasParaRecompensa) * 100;
-          if (porcentaje > 100) porcentaje = 100;
-
-          progressFill.style.width = porcentaje + '%';
-          progressText.textContent = `${visitas} de ${visitasParaRecompensa} visitas para tu recompensa`;
+          if (data.success) {
+            message.textContent = 'Nombre actualizado con éxito 😊';
+            cargarDatosCliente();
+            editorNombre.style.display = 'none';
+            preguntaCambio.style.display = 'block';
+          } else {
+            message.textContent = 'Error al actualizar nombre.';
+          }
+          guardarNombreBtn.disabled = false;
         })
         .catch(() => {
-          message.textContent = 'Error al cargar datos. Intenta más tarde.';
+          message.textContent = 'Error de conexión.';
+          guardarNombreBtn.disabled = false;
         });
-    }
-  </script>
+    });
+  }
+
+  function cargarDatosCliente() {
+    fetch(`${scriptUrl}?uid=${uid}`)
+      .then(res => res.json())
+      .then(data => {
+        const cliente = data.cliente || {};
+        nombreDisplay.textContent = cliente.nombre || 'Invitado';
+        nombreInput.value = cliente.nombre || '';
+        visitasDisplay.textContent = cliente.visitas || 0;
+        ultimaDisplay.textContent = cliente.ultima || 'N/A';
+        avatarSeleccionado = cliente.avatar || '';
+        avatarPreview.src = avatarSeleccionado || 'https://via.placeholder.com/120x120.png?text=Avatar';
+
+        const visitas = parseInt(cliente.visitas) || 0;
+        let porcentaje = (visitas / visitasParaRecompensa) * 100;
+        if (porcentaje > 100) porcentaje = 100;
+
+        progressFill.style.width = porcentaje + '%';
+        progressText.textContent = `${visitas} de ${visitasParaRecompensa} visitas para tu recompensa`;
+      })
+      .catch(() => {
+        message.textContent = 'Error al cargar datos. Intenta más tarde.';
+      });
+  }
+
+  function cargarAvatares() {
+    fetch(`${scriptUrl}?uid=${uid}&tipo=avatares`)
+      .then(res => res.json())
+      .then(data => {
+        avatarLista.innerHTML = '';
+        data.avatares.forEach(a => {
+          const img = document.createElement('img');
+          img.src = a.imagen;
+          img.alt = a.titulo;
+          img.className = 'avatar-option';
+          if (a.imagen === avatarSeleccionado) {
+            img.classList.add('selected');
+          }
+
+          img.addEventListener('click', () => seleccionarAvatar(a.imagen, img));
+          avatarLista.appendChild(img);
+        });
+      });
+  }
+
+  function seleccionarAvatar(url, elemento) {
+  avatarPreview.src = url;
+  message.textContent = 'Actualizando avatar...';
+
+  fetch(`${scriptUrl}?uid=${uid}&accion=actualizarAvatar&avatar=${encodeURIComponent(url)}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        message.textContent = 'Avatar actualizado 🧡';
+
+        document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+        elemento.classList.add('selected');
+
+        // ✨ Animación de brillito
+        avatarPreview.classList.add('avatar-brillo');
+        setTimeout(() => {
+          avatarPreview.classList.remove('avatar-brillo');
+        }, 800); // igual al tiempo de la animación en CSS
+      } else {
+        message.textContent = 'Error al guardar avatar.';
+      }
+    })
+    .catch(() => {
+      message.textContent = 'Error de conexión al guardar el avatar.';
+    });
+}
+
+</script>
+
+
 </body>
 </html>
