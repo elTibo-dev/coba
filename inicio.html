@@ -1,64 +1,177 @@
-<script>
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbwZt_l3P9xBRrpa2811YXZWdlfeCO3naWbBIIXCA_u-lAOygIGvEPCny967FQsGL8pK/exec";
-  const uid = new URLSearchParams(window.location.search).get("uid");
-
-  const perfilLink = document.getElementById("perfil-link");
-  const pinSection = document.getElementById("pin-section");
-  const mensaje = document.getElementById("mensaje");
-
-  // Siempre mostrar botón de perfil si hay UID
-  if (uid) {
-    perfilLink.href = `cliente.html?uid=${uid}`;
-  } else {
-    perfilLink.href = "#";
-  }
-
-  // Cargar nombre y links desde el sheet
-  fetch(`${scriptUrl}?uid=${uid}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.cliente?.nombre) {
-        document.getElementById("nombre").innerText = data.cliente.nombre;
-      }
-      if (data.cafeteria) {
-        if (data.cafeteria.instagram)
-          document.getElementById("instagram-link").href = data.cafeteria.instagram;
-        if (data.cafeteria.facebook)
-          document.getElementById("facebook-link").href = data.cafeteria.facebook;
-        if (data.cafeteria.whatsapp)
-          document.getElementById("whatsapp-link").href = data.cafeteria.whatsapp;
-      }
-    });
-
-  // Mostrar campo de PIN solo al hacer clic
-  function mostrarPinInput() {
-    pinSection.style.display = "block";
-  }
-
-  // Registrar visita
-  function registrarVisita() {
-    const pin = document.getElementById("pin").value.trim();
-
-    if (!pin) {
-      mensaje.innerText = "Por favor ingresa el PIN.";
-      return;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cobá Café</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background-color: #f5e9d3;
+      font-family: 'Quicksand', sans-serif;
+      color: #4b2e05;
     }
+    .container {
+      max-width: 400px;
+      margin: 30px auto;
+      background-color: #fff6e8;
+      border-radius: 20px;
+      padding: 30px 20px;
+      box-shadow: 0 6px 15px rgba(75,46,5,0.2);
+      text-align: center;
+    }
+    .logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+    .link-btn {
+      display: block;
+      background-color: #7b4f24;
+      color: #fff6e8;
+      text-decoration: none;
+      border-radius: 25px;
+      padding: 12px;
+      margin: 10px 0;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .link-btn:hover {
+      background-color: #4b2e05;
+    }
+    #pin-section {
+      display: none;
+      margin-top: 20px;
+    }
+    input[type="password"] {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid #7b4f24;
+      width: 100%;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 12px;
+      padding: 12px 25px;
+      background-color: #7b4f24;
+      color: #fff6e8;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #mensaje {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #4b2e05;
+    }
+    .staff-btn {
+      margin-top: 20px;
+      padding: 8px 14px;
+      border: 2px solid #7b4f24;
+      background-color: transparent;
+      color: #7b4f24;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .staff-btn:hover {
+      background-color: #e3d3b1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logo-coba.png" alt="Cobá Logo" class="logo" />
+    <h1>Bienvenido de vuelta <span id="nombre">invitado</span> ☕</h1>
 
-    fetch(`${scriptUrl}?uid=${uid}&accion=registrarVisita&pin=${encodeURIComponent(pin)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          mensaje.innerText = "✅ Visita registrada correctamente.";
-          pinSection.style.display = "none"; // Ocultamos campo y botón
-        } else {
-          mensaje.innerText = "❌ " + (data.mensaje || "Error al registrar visita.");
-        }
-      })
-      .catch(() => {
-        mensaje.innerText = "❌ Error de conexión.";
-      });
-  }
+    <a id="perfil-link" class="link-btn" href="#">Ver recompensas</a>
 
-  window.mostrarPinInput = mostrarPinInput;
-  window.registrarVisita = registrarVisita;
-</script>
+    <a id="instagram-link" class="link-btn" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+    <a id="facebook-link" class="link-btn" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+    <a id="whatsapp-link" class="link-btn" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+
+    <button class="staff-btn" onclick="mostrarPinInput()">Soy staff</button>
+
+    <div id="pin-section">
+      <input type="password" id="pin" placeholder="PIN de staff" inputmode="numeric" />
+      <button onclick="registrarVisita()">Registrar visita</button>
+    </div>
+
+    <div id="mensaje"></div>
+  </div>
+	 <script>
+	  const scriptUrl = "https://script.google.com/macros/s/AKfycbwZt_l3P9xBRrpa2811YXZWdlfeCO3naWbBIIXCA_u-lAOygIGvEPCny967FQsGL8pK/exec";
+	  const uid = new URLSearchParams(window.location.search).get("uid");
+
+	  const perfilLink = document.getElementById("perfil-link");
+	  const pinSection = document.getElementById("pin-section");
+	  const mensaje = document.getElementById("mensaje");
+
+	  // Siempre mostrar botón de perfil si hay UID
+	  if (uid) {
+		perfilLink.href = `cliente.html?uid=${uid}&tipo=avatares`;
+	  } else {
+		perfilLink.href = "#";
+	  }
+
+	  // Cargar nombre y links desde el sheet
+	  fetch(`${scriptUrl}?uid=${uid}`)
+		.then(res => res.json())
+		.then(data => {
+		  if (data.cliente?.nombre) {
+			document.getElementById("nombre").innerText = data.cliente.nombre;
+		  }
+		  if (data.cafeteria) {
+			if (data.cafeteria.instagram)
+			  document.getElementById("instagram-link").href = data.cafeteria.instagram;
+			if (data.cafeteria.facebook)
+			  document.getElementById("facebook-link").href = data.cafeteria.facebook;
+			if (data.cafeteria.whatsapp)
+			  document.getElementById("whatsapp-link").href = data.cafeteria.whatsapp;
+		  }
+		});
+
+	  // Mostrar campo de PIN solo al hacer clic
+	  function mostrarPinInput() {
+		pinSection.style.display = "block";
+	  }
+
+	  // Registrar visita
+	  function registrarVisita() {
+		const pin = document.getElementById("pin").value.trim();
+
+		if (!pin) {
+		  mensaje.innerText = "Por favor ingresa el PIN.";
+		  return;
+		}
+
+		fetch(`${scriptUrl}?uid=${uid}&accion=registrarVisita&pin=${encodeURIComponent(pin)}`)
+		  .then(res => res.json())
+		  .then(data => {
+			if (data.success) {
+			  mensaje.innerText = "✅ Visita registrada correctamente.";
+			  pinSection.style.display = "none"; // Ocultamos campo y botón
+			} else {
+			  mensaje.innerText = "❌ " + (data.mensaje || "Error al registrar visita.");
+			}
+		  })
+		  .catch(() => {
+			mensaje.innerText = "❌ Error de conexión.";
+		  });
+	  }
+
+	  window.mostrarPinInput = mostrarPinInput;
+	  window.registrarVisita = registrarVisita;
+	</script>
+
+</body>
+</html>
