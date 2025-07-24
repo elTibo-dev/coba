@@ -19,6 +19,7 @@
       border-radius: 20px;
       padding: 25px 20px 30px 20px;
       box-shadow: 0 6px 15px rgba(75,46,5,0.2);
+      position: relative;
     }
     h1 {
       text-align: center;
@@ -43,7 +44,7 @@
       display: block;
       margin-bottom: 6px;
     }
-    input[type="text"] {
+    input[type="text"], input[type="password"] {
       width: 100%;
       padding: 8px 12px;
       border-radius: 8px;
@@ -54,14 +55,15 @@
       box-sizing: border-box;
     }
     button {
-      margin: 10px 0;
-      width: fit-content;
-      padding: 10px 18px;
+      margin: 10px auto;
+      display: block;
+      width: auto;
+      padding: 8px 14px;
       background: #7b4f24;
       border: none;
-      border-radius: 25px;
+      border-radius: 20px;
       color: #f5e9d3;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(123,79,36,0.3);
@@ -69,6 +71,14 @@
     }
     button:hover {
       background: #4b2e05;
+    }
+    #redimirBtn {
+      background-color: transparent;
+      border: 2px solid #7b4f24;
+      color: #7b4f24;
+    }
+    #redimirBtn:hover {
+      background-color: #e3d3b1;
     }
     #message {
       margin-top: 15px;
@@ -128,39 +138,34 @@
     .avatar-option.selected {
       border-color: #7b4f24;
     }
-    #inicioBtn {
-      display: block;
-      margin: 20px auto 0;
+    .icon-home {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      text-decoration: none;
+      font-size: 1.5rem;
+      color: #4b2e05;
+    }
+    .icon-home:hover {
+      color: #7b4f24;
+    }
+    #pin-section {
+      display: none;
       text-align: center;
     }
-    @keyframes destello {
-      0% { box-shadow: 0 0 0px rgba(255,255,255,0); transform: scale(1); }
-      50% { box-shadow: 0 0 20px rgba(255,255,255,0.6); transform: scale(1.05); }
-      100% { box-shadow: 0 0 0px rgba(255,255,255,0); transform: scale(1); }
-    }
-    .avatar-brillo {
-      animation: destello 0.8s ease;
+    #pin-section input, #pin-section button {
+      margin: 8px auto;
+      display: block;
     }
   </style>
 </head>
 <body>
   <div id="container">
-    <h1>Tu Perfil en Cobá</h1>
-    <img id="avatarPreview" class="avatar-preview" src="" alt="Avatar" title="Presiona para cambiar tu avatar">
+    <a id="homeIcon" class="icon-home" href="#" title="Inicio">🏠</a>
+    <h1 id="tituloNivel">Tu perfil en Cobá</h1>
+    <img id="avatarPreview" class="avatar-preview" src="" alt="Avatar">
     <div id="avatar-lista"></div>
-
     <div class="info"><strong>Nombre:</strong> <span id="nombreDisplay"></span></div>
-
-    <div id="preguntaCambio">
-      <p style="margin-bottom: 10px;">¿Quieres cambiar tu nombre? &emsp; <button id="mostrarEditorBtn">Sí!</button></p>
-    </div>
-
-    <div id="editorNombre" style="display: none;">
-      <label for="nombreInput">Escribe tu nuevo nombre:</label>
-      <input type="text" id="nombreInput" placeholder="Tu nombre" />
-      <button id="guardarNombreBtn">Guardar nombre</button>
-    </div>
-
     <div class="info"><strong>Visitas:</strong> <span id="visitasDisplay">0</span></div>
     <div class="info"><strong>Última visita:</strong> <span id="ultimaDisplay">N/A</span></div>
 
@@ -171,154 +176,107 @@
       <div id="progress-text"></div>
     </div>
 
+    <div id="pin-section">
+      <input type="password" id="pin" placeholder="PIN de staff" inputmode="numeric" />
+      <button onclick="redimirRecompensa()">Confirmar redención</button>
+    </div>
+
+    <button id="redimirBtn" onclick="mostrarPinInput()">Redimir recompensa</button>
     <div id="message"></div>
-    <button id="inicioBtn" href="#">Inicio</button>
   </div>
 
-  <script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwZt_l3P9xBRrpa2811YXZWdlfeCO3naWbBIIXCA_u-lAOygIGvEPCny967FQsGL8pK/exec';
-    const urlParams = new URLSearchParams(window.location.search);
-    const uid = urlParams.get('uid');
+	<script>
+	  const scriptUrl = 'https://script.google.com/macros/s/AKfycbywI7LJYrq3C9fLgGCu7GrtVD88mW7L82UUafpByQ77BNiSedJs-td7gsGXvz9_kHNT/exec';
+	  const urlParams = new URLSearchParams(window.location.search);
+	  const uid = urlParams.get('uid');
 
-    const nombreDisplay = document.getElementById('nombreDisplay');
-    const visitasDisplay = document.getElementById('visitasDisplay');
-    const ultimaDisplay = document.getElementById('ultimaDisplay');
-    const progressFill = document.getElementById('progress-fill');
-    const progressText = document.getElementById('progress-text');
-    const nombreInput = document.getElementById('nombreInput');
-    const guardarNombreBtn = document.getElementById('guardarNombreBtn');
-    const message = document.getElementById('message');
-    const preguntaCambio = document.getElementById('preguntaCambio');
-    const mostrarEditorBtn = document.getElementById('mostrarEditorBtn');
-    const editorNombre = document.getElementById('editorNombre');
-    const avatarPreview = document.getElementById('avatarPreview');
-    const avatarLista = document.getElementById('avatar-lista');
-    const inicioBtn = document.getElementById('inicioBtn');
+	  const nombreDisplay = document.getElementById('nombreDisplay');
+	  const visitasDisplay = document.getElementById('visitasDisplay');
+	  const ultimaDisplay = document.getElementById('ultimaDisplay');
+	  const progressFill = document.getElementById('progress-fill');
+	  const progressText = document.getElementById('progress-text');
+	  const avatarPreview = document.getElementById('avatarPreview');
+	  const avatarLista = document.getElementById('avatar-lista');
+	  const message = document.getElementById('message');
+	  const pinSection = document.getElementById('pin-section');
+	  const tituloNivel = document.getElementById('tituloNivel');
+	  const homeIcon = document.getElementById('homeIcon');
+	  const redimirBtn = document.getElementById('redimirBtn');
 
-    const visitasParaRecompensa = 10;
-    let avatarSeleccionado = "";
+	  let avatarSeleccionado = "";
 
-    if (!uid) {
-      nombreDisplay.textContent = 'Invitado';
-      message.textContent = 'Escanea tu llavero para ver tu perfil.';
-      guardarNombreBtn.disabled = true;
-    } else {
-      cargarDatosCliente();
-      inicioBtn.href = `inicio.html?uid=${uid}`;
+	  if (uid) {
+		homeIcon.href = `inicio.html?uid=${uid}`;
+		cargarDatosCliente();
+	  } else {
+		nombreDisplay.textContent = 'Invitado';
+		message.textContent = 'Escanea tu llavero para ver tu perfil.';
+	  }
 
-      mostrarEditorBtn.addEventListener('click', () => {
-        editorNombre.style.display = 'block';
-        preguntaCambio.style.display = 'none';
-      });
+	  function cargarDatosCliente() {
+		fetch(`${scriptUrl}?uid=${uid}`)
+		  .then(res => res.json())
+		  .then(data => {
+			const cliente = data.cliente || {};
+			const visitas = parseInt(cliente.visitas) || 0;
+			const nivel = parseInt(cliente.nivel) || 0;
+			const nombre = cliente.nombre || 'Invitado';
 
-      avatarPreview.addEventListener('click', () => {
-        if (avatarLista.style.display === 'flex') {
-          avatarLista.style.display = 'none';
-        } else {
-          cargarAvatares();
-          avatarLista.style.display = 'flex';
-        }
-      });
+			nombreDisplay.textContent = nombre;
+			visitasDisplay.textContent = visitas;
+			ultimaDisplay.textContent = cliente.ultima || 'N/A';
+			avatarSeleccionado = cliente.avatar || '';
+			avatarPreview.src = avatarSeleccionado || 'https://via.placeholder.com/120x120.png?text=Avatar';
 
-      guardarNombreBtn.addEventListener('click', () => {
-        const nuevoNombre = nombreInput.value.trim();
-        if (!nuevoNombre) {
-          message.textContent = 'El nombre no puede estar vacío.';
-          return;
-        }
+			tituloNivel.innerText = `Cliente nivel ${nivel} en Cobá`;
 
-        message.textContent = 'Guardando nombre...';
-        guardarNombreBtn.disabled = true;
+			const porcentaje = Math.min((visitas / 10) * 100, 100);
+			progressFill.style.width = porcentaje + '%';
 
-        fetch(`${scriptUrl}?uid=${uid}&accion=actualizarNombre&nombre=${encodeURIComponent(nuevoNombre)}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              message.textContent = 'Nombre actualizado con éxito 😊';
-              cargarDatosCliente();
-              editorNombre.style.display = 'none';
-              preguntaCambio.style.display = 'block';
-            } else {
-              message.textContent = 'Error al actualizar nombre.';
-            }
-            guardarNombreBtn.disabled = false;
-          })
-          .catch(() => {
-            message.textContent = 'Error de conexión.';
-            guardarNombreBtn.disabled = false;
-          });
-      });
-    }
+			if (visitas < 5) {
+			  progressText.textContent = `Te faltan ${5 - visitas} visitas para tu primer recompensa.`;
+			  redimirBtn.style.display = 'none';
+			} else if (visitas === 5 || visitas === 10) {
+			  progressText.textContent = `¡Felicidades! Puedes redimir tu recompensa.`;
+			  redimirBtn.style.display = 'block';
+			} else {
+			  progressText.textContent = `Te faltan ${10 - (visitas % 10)} visitas para tu próxima recompensa.`;
+			  redimirBtn.style.display = 'none';
+			}
+		  })
+		  .catch(() => {
+			message.textContent = 'Error al cargar datos. Intenta más tarde.';
+		  });
+	  }
 
-    function cargarDatosCliente() {
-      fetch(`${scriptUrl}?uid=${uid}`)
-        .then(res => res.json())
-        .then(data => {
-          const cliente = data.cliente || {};
-          nombreDisplay.textContent = cliente.nombre || 'Invitado';
-          nombreInput.value = cliente.nombre || '';
-          visitasDisplay.textContent = cliente.visitas || 0;
-          ultimaDisplay.textContent = cliente.ultima || 'N/A';
-          avatarSeleccionado = cliente.avatar || '';
-          avatarPreview.src = avatarSeleccionado || 'https://via.placeholder.com/120x120.png?text=Avatar';
+	  function mostrarPinInput() {
+		redimirBtn.style.display = 'none';
+		pinSection.style.display = 'block';
+	  }
 
-          const visitas = parseInt(cliente.visitas) || 0;
-          let porcentaje = (visitas / visitasParaRecompensa) * 100;
-          if (porcentaje > 100) porcentaje = 100;
+	  function redimirRecompensa() {
+		const pin = document.getElementById('pin').value.trim();
+		if (!pin) {
+		  message.textContent = 'Por favor ingresa el PIN.';
+		  return;
+		}
 
-          progressFill.style.width = porcentaje + '%';
-          progressText.textContent = `${visitas} de ${visitasParaRecompensa} visitas para tu próxima recompensa`;
-        })
-        .catch(() => {
-          message.textContent = 'Error al cargar datos. Intenta más tarde.';
-        });
-    }
-
-    function cargarAvatares() {
-      fetch(`${scriptUrl}?uid=${uid}&tipo=avatares`)
-        .then(res => res.json())
-        .then(data => {
-          avatarLista.innerHTML = '';
-          data.avatares.forEach(a => {
-            const img = document.createElement('img');
-            img.src = a.imagen;
-            img.alt = a.titulo;
-            img.className = 'avatar-option';
-            if (a.imagen === avatarSeleccionado) {
-              img.classList.add('selected');
-            }
-
-            img.addEventListener('click', () => seleccionarAvatar(a.imagen, img));
-            avatarLista.appendChild(img);
-          });
-        });
-    }
-
-    function seleccionarAvatar(url, elemento) {
-      avatarPreview.src = url;
-      message.textContent = 'Actualizando avatar...';
-
-      fetch(`${scriptUrl}?uid=${uid}&accion=actualizarAvatar&avatar=${encodeURIComponent(url)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            message.textContent = 'Avatar actualizado 🧡';
-            avatarSeleccionado = url;
-            document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-            elemento.classList.add('selected');
-            avatarPreview.classList.add('avatar-brillo');
-            setTimeout(() => {
-              avatarPreview.classList.remove('avatar-brillo');
-            }, 800);
-            avatarLista.style.display = 'none';
-          } else {
-            message.textContent = 'Error al guardar avatar.';
-          }
-        })
-        .catch(() => {
-          message.textContent = 'Error de conexión al guardar el avatar.';
-        });
-    }
-  </script>
+		fetch(`${scriptUrl}?uid=${uid}&accion=redimirNivel&pin=${encodeURIComponent(pin)}`)
+		  .then(res => res.json())
+		  .then(data => {
+			if (data.success) {
+			  message.textContent = '✅ Recompensa redimida con éxito.';
+			  pinSection.style.display = 'none';
+			  redimirBtn.style.display = 'none';
+			  cargarDatosCliente(); // recarga datos para ver si subió de nivel
+			} else {
+			  message.textContent = '❌ ' + (data.mensaje || 'Error al redimir recompensa.');
+			}
+		  })
+		  .catch(() => {
+			message.textContent = '❌ Error de conexión.';
+		  });
+	  }
+	</script>
 </body>
 </html>
